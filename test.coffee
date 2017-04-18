@@ -1,5 +1,9 @@
-require("./fold/src/index.coffee")
+fold = require('fold')
+fs = require('fs')
+lf = require("./localfoldability.coffee")
 
-console.log(geom.sum(2,3))
+creasecontents = fs.readFileSync("creasepattern.fold")
+creasefold = JSON.parse(creasecontents)
 
-
+#lf.kawasaki_single_vertex(5, creasefold)
+lf.kawasaki_all_vertex(creasefold)
