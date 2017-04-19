@@ -50,25 +50,48 @@ lf.kawasaki_all_vertex = (fold) ->
 lf.maekawa_single_vertex = (v, fold) ->
 	#Given an MV assignment, checks Maekawa condition on this vertex
 	
-	edge_assignment = fold.edge_assignment
-	m = 0
-	v = 0
-	for e in fold.edges_vertices:
+	edges_assignment = fold.edges_assignment
+	mountain_count = 0
+	valley_count = 0
+	for e,i in fold.edges_vertices
 		[u,w] = e
 		console.log(u, w)
-		if u === v ||= w === v:
-			if edge_assignment[e] is "B":
+		if u == v || w == v
+			console.log("Found the vertex!")
+			console.log(edges_assignment[i])
+			if edges_assignment[i] is "B"
 				console.log("Vertex ", v, " satisfies the Maekawa condition")
 				return true
-			if edge_assignment[e] is "M":
-				m += 1
-			if edge_assignment[e] is "V":
-				v += 1
+			if edges_assignment[i] is "M"
+				mountain_count += 1
+			if edges_assignment[i] is "V"
+				valley_count += 1
 		
-	if m-v === 2 ||= v-m === 2:
+	if mountain_count-valley_count == 2 || valley_count-mountain_count == 2
 		console.log("Vertex ", v, " satisfies the Maekawa condition")
 		return true
 	false
+
+lf.maekawa_all_vertex = (fold) ->
+	#Given an MV assignment, checks Maekawa condition on every vertex
+
+	vertex_coords = fold.vertices_coords
+	vertex_num = vertex_coords.length
+	flag = true
+	for i in [0..vertex_num-1]
+		if lf.maekawa_single_vertex(i, fold) is false
+			flag = false
+	if flag is true
+		console.log("Every vertex in this mountain-valley assignment satisfies the Maekawa condition")
+		return true
+	else
+		console.log("Not every vertex in this crease pattern satisfies the Maekawa condition")
+		return false
+
+
+lf.find_mv_bf = (fold) ->
+	#Given a crease pattern, sees if there exists an MV assignment that 
+	#satisfies Maekawa everywhere
 	
 	
 
