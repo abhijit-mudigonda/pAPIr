@@ -31,7 +31,7 @@ lf.kawasaki_single_vertex = (v, fold) ->
 		
 	
 lf.kawasaki_all_vertex = (fold) ->
-	#Given an MV assignment, checks to see whether or not every vertex is locally foldable
+	#Checks Kawasaki condition on every vertex of a crease pattern
 
 	vertex_coords = fold.vertices_coords
 	vertex_num = vertex_coords.length
@@ -47,6 +47,28 @@ lf.kawasaki_all_vertex = (fold) ->
 		return false
 	
 		
+lf.maekawa_single_vertex = (v, fold) ->
+	#Given an MV assignment, checks Maekawa condition on this vertex
+	
+	edge_assignment = fold.edge_assignment
+	m = 0
+	v = 0
+	for e in fold.edges_vertices:
+		[u,w] = e
+		console.log(u, w)
+		if u === v ||= w === v:
+			if edge_assignment[e] is "B":
+				console.log("Vertex ", v, " satisfies the Maekawa condition")
+				return true
+			if edge_assignment[e] is "M":
+				m += 1
+			if edge_assignment[e] is "V":
+				v += 1
+		
+	if m-v === 2 ||= v-m === 2:
+		console.log("Vertex ", v, " satisfies the Maekawa condition")
+		return true
+	false
 	
 	
 
