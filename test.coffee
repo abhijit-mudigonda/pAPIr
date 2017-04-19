@@ -7,3 +7,5 @@ creasefold = JSON.parse(creasecontents)
 
 #lf.kawasaki_single_vertex(5, creasefold)
 lf.kawasaki_all_vertex(creasefold)
+
+lf.maekawa_all_vertex(creasemv)
