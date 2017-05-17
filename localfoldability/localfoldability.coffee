@@ -104,7 +104,6 @@ lf.crimpable_single_vertex = (v, fold) ->
 
 	vertex_coords = fold.vertices_coords
 	adjvertices = FOLD.convert.sort_vertices_vertices(fold)[v]
-	console.log adjvertices
 	len = adjvertices.length
 
 	#Minima points to the element of angles that is removed
@@ -122,9 +121,6 @@ lf.crimpable_single_vertex = (v, fold) ->
 	for i in [0..len-1]
 		sv_assignment_dict[[v,i]] = assignment_dict[[v,adjvertices[i]]]
 
-	console.log "Single vertex dictionary"
-	console.log sv_assignment_dict
-
 	#Now you have a dictionary keyed by [v,w] that tells you assignment, where w is in the range 0 to len(adjvertices)-1 
 
 	for j in [0..len-1]
@@ -137,39 +133,24 @@ lf.crimpable_single_vertex = (v, fold) ->
 
 		angles.head_push(curr_angle)
 
-		console.log "next iteration"
-		console.log j
-		console.log k
-		console.log sv_assignment_dict[[v,j]]
-		console.log sv_assignment_dict[[v,k]]
-		if curr_angle.angle < next_angle.angle and curr_angle.angle < prev_angle.angle and sv_assignment_dict[[v,j]] != sv_assignment_dict[[v,k]]
+		if curr_angle.angle <= next_angle.angle and curr_angle.angle <= prev_angle.angle and sv_assignment_dict[[v,j]] != sv_assignment_dict[[v,k]]
 			minima.head_push(angles.head)
 
 	#Connect the head and tail of angles
 	angles.tail.prev = angles.head
 	angles.head.next = angles.tail
 	
-	angles.print()
-	minima.print()
-
 	#Now for crimping!
-	console.log minima.length
 	while minima.length > 0
 		#While the list is not empty, keep crimping!
 		#Crimping means folding the local minimum under one of the two adjacent angles. Suppose originally \theta_1, \theta_2, \theta_3
 		#The end result is \theta_1+\theta_3-\theta_2
 	
-		console.log "Making a crimp!"
 		#Get the first local minimum - this points to an angle to be removed
 		#Replace pred--el--succ with --(succ+pred-el)--
 		el = minima.head_pop()
 		succ = el.next
 		pred = el.prev
-
-		console.log "pre-crimp elements"
-		console.log el
-		console.log succ
-		console.log pred
 
 		el.value.angle = succ.value.angle+pred.value.angle-el.value.angle
 		el.value.edge_0 = pred.value.edge_0
@@ -179,42 +160,23 @@ lf.crimpable_single_vertex = (v, fold) ->
 		el.next = succ.next
 		el.prev = pred.prev
 		
-		console.log "post-crimp element"
-		console.log el
-
-		console.log "edge assignments"
-		console.log sv_assignment_dict[el.value.edge_0]
-		console.log sv_assignment_dict[el.value.edge_1]
-		
 		succ = el.next
 		pred = el.prev
-		
-		#console.log "succ assignments"
-		#console.log sv_assignment_dict[succ.value.edge_0]
-		#console.log sv_assignment_dict[succ.value.edge_1]
 
-		#console.log "succ angles"
-		#console.log succ.value.angle
-		#console.log succ.next.value.angle
-		#console.log succ.prev.value.angle
-
-		angles.print()
 		#Check if the newly created angle is itself a local minima, and if the two edges are opposite
-		if el.value.angle < el.next.value.angle and el.value.angle < el.prev.value.angle and sv_assignment_dict[el.value.edge_0] != sv_assignment_dict[el.value.edge_1]
-			console.log "Added to minima"
+		if el.value.angle <= el.next.value.angle and el.value.angle <= el.prev.value.angle and sv_assignment_dict[el.value.edge_0] != sv_assignment_dict[el.value.edge_1]
 			minima.head_push(el)
 		#Check if the next angle is now a local minimum
-		if succ.value.angle < succ.next.value.angle and succ.value.angle < succ.prev.value.angle and sv_assignment_dict[succ.value.edge_0] != sv_assignment_dict[succ.value.edge_1]
-			console.log "Added to minima"
+		if succ.value.angle <= succ.next.value.angle and succ.value.angle <= succ.prev.value.angle and sv_assignment_dict[succ.value.edge_0] != sv_assignment_dict[succ.value.edge_1]
 			minima.head_push(succ)
 		#Check if the previous angle is now a local minimum
 		if pred.value.angle < pred.next.value.angle and pred.value.angle < pred.prev.value.angle and sv_assignment_dict[pred.value.edge_0] != sv_assignment_dict[pred.value.edge_1]
-			console.log "Added to minima"
 			minima.head_push(pred)
 
-		angles.length -= 2
-		console.log "The number of local minima is" 
-		console.log minima.length
 
 	console.log "and when all's said and done, the number of angles left is"
 	console.log angles.length
+	if angles.length == 0
+		console.log "Flat foldable!"
+	if angles.length == 2
+		console.log "Not sure lol"
